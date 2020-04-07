@@ -110,7 +110,7 @@ public class ArrayList<E> extends AbstractList<E>
     private static final long serialVersionUID = 8683452581122892189L;
 
     /**
-     * Default initial capacity.
+     * Default initial capacity.1111
      */
     private static final int DEFAULT_CAPACITY = 10;
 
@@ -143,7 +143,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Constructs an empty list with the specified initial capacity.
-     *
+     * 变量 modCount：用来定义操作次数，修改或者其他操作。主要用来校验的某些操作是否被修改过(多线程)
      * @param  initialCapacity  the initial capacity of the list
      * @throws IllegalArgumentException if the specified initial capacity
      *         is negative
@@ -192,6 +192,7 @@ public class ArrayList<E> extends AbstractList<E>
      * the storage of an <tt>ArrayList</tt> instance.
      */
     public void trimToSize() {
+
         modCount++;
         if (size < elementData.length) {
             elementData = (size == 0)
@@ -243,7 +244,7 @@ public class ArrayList<E> extends AbstractList<E>
      * The maximum size of array to allocate.
      * Some VMs reserve some header words in an array.
      * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
+     * OutOfMemoryError: Requested array size exceeds VM limit  之所以要减8，因为
      */
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
@@ -730,13 +731,13 @@ public class ArrayList<E> extends AbstractList<E>
                 System.arraycopy(elementData, r,
                                  elementData, w,
                                  size - r);
-                w += size - r;
+                w += size - r;//用于判断当前copy完后的size的大小
             }
-            if (w != size) {
+            if (w != size) {//非全部拷贝，需要将多余置空
                 // clear to let GC do its work
                 for (int i = w; i < size; i++)
                     elementData[i] = null;
-                modCount += size - w;
+                modCount += size - w;//操作次数计算的是变空的个数，而不是实际操作次数(拷贝+置空)。
                 size = w;
                 modified = true;
             }
@@ -756,12 +757,12 @@ public class ArrayList<E> extends AbstractList<E>
         throws java.io.IOException{
         // Write out element count, and any hidden stuff
         int expectedModCount = modCount;
-        s.defaultWriteObject();
+        s.defaultWriteObject();//首先通过s.defaultWriteObject();对非transient变量进行了序列化。
 
-        // Write out size as capacity for behavioural compatibility with clone()
+        // Write out size as capacity for behavioural compatibility with clone()用于序列化实际存储的部分
         s.writeInt(size);
 
-        // Write out all elements in the proper order.
+        // Write out all elements in the proper order.这个循环对数组中的有值的元素逐个进行了序列化操作
         for (int i=0; i<size; i++) {
             s.writeObject(elementData[i]);
         }
@@ -780,7 +781,7 @@ public class ArrayList<E> extends AbstractList<E>
         elementData = EMPTY_ELEMENTDATA;
 
         // Read in size, and any hidden stuff
-        s.defaultReadObject();
+        s.defaultReadObject();//反序列化时也是一样，首先通过s.defaultReadObject();;对非transient变量进行了反序列化。
 
         // Read in capacity
         s.readInt(); // ignored
@@ -793,7 +794,7 @@ public class ArrayList<E> extends AbstractList<E>
 
             Object[] a = elementData;
             // Read in all elements in the proper order.
-            for (int i=0; i<size; i++) {
+            for (int i=0; i<size; i++) {//这个循环对数组中的有值的元素逐个进行反序列化操作
                 a[i] = s.readObject();
             }
         }

@@ -598,6 +598,8 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
      * does not wish to provide fail-fast iterators, this field may be
      * ignored.
      */
+    //用来定义操作次数，修改或者其他操作。
+    //主要用来校验的某些操作是否被修改过(多线程)
     protected transient int modCount = 0;
 
     private void rangeCheckForAdd(int index) {
