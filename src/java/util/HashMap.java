@@ -233,19 +233,19 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     /**
      * The default initial capacity - MUST be a power of two.
      */
-    static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
+    static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16ECTranslation [INFO]: 默认初始容量; // 默认初始容量,化容量
 
     /**
      * The maximum capacity, used if a higher value is implicitly specified
      * by either of the constructors with arguments.
      * MUST be a power of two <= 1<<30.
      */
-    static final int MAXIMUM_CAPACITY = 1 << 30;
+    static final int MAXIMUM_CAPACITY = 1 << 30;//最大容量,最高能力,最大称量 2^30
 
     /**
      * The load factor used when none specified in constructor.
      */
-    static final float DEFAULT_LOAD_FACTOR = 0.75f;
+    static final float DEFAULT_LOAD_FACTOR = 0.75f;//默认加载因子
 
     /**
      * The bin count threshold for using a tree rather than list for a
@@ -255,22 +255,22 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * tree removal about conversion back to plain bins upon
      * shrinkage.
      */
-    static final int TREEIFY_THRESHOLD = 8;
+    static final int TREEIFY_THRESHOLD = 8;//当桶(bucket)上的结点数大于这个值时会转成红黑树(JDK1.8新增)
 
     /**
      * The bin count threshold for untreeifying a (split) bin during a
      * resize operation. Should be less than TREEIFY_THRESHOLD, and at
      * most 6 to mesh with shrinkage detection under removal.
      */
-    static final int UNTREEIFY_THRESHOLD = 6;
+    static final int UNTREEIFY_THRESHOLD = 6;//当桶(bucket)上的节点数小于这个值时会转成链表(JDK1.8新增)
 
     /**
-     * The smallest table capacity for which bins may be treeified.
-     * (Otherwise the table is resized if too many nodes in a bin.)
-     * Should be at least 4 * TREEIFY_THRESHOLD to avoid conflicts
+     * The smallest table capacity for which bins may be treeified. 当集合中的容量大于这个值时，表中的桶才能进行树形化 ，
+     * (Otherwise the table is resized if too many nodes in a bin.) 否则桶内元素太多时会扩容，而不是树形化
+     * Should be at least 4 * TREEIFY_THRESHOLD to avoid conflicts 为了避免进行扩容、树形化选择的冲突，这个值不能小于 4 * TREEIFY_THRESHOLD
      * between resizing and treeification thresholds.
      */
-    static final int MIN_TREEIFY_CAPACITY = 64;
+    static final int MIN_TREEIFY_CAPACITY = 64; //最小树形化阈值  红黑树
 
     /**
      * Basic hash bin node, used for most entries.  (See below for
@@ -340,42 +340,42 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     }
 
     /**
-     * Returns x's Class if it is of the form "class C implements
-     * Comparable<C>", else null.
+     * Returns x's Class if it is of the form "class C implements此时就需要用到comparableClassFor方法
+     * Comparable<C>", else null.来获取该元素键的Class
      */
     static Class<?> comparableClassFor(Object x) {
         if (x instanceof Comparable) {
             Class<?> c; Type[] ts, as; Type t; ParameterizedType p;
-            if ((c = x.getClass()) == String.class) // bypass checks
-                return c;
-            if ((ts = c.getGenericInterfaces()) != null) {
-                for (int i = 0; i < ts.length; ++i) {
-                    if (((t = ts[i]) instanceof ParameterizedType) &&
-                        ((p = (ParameterizedType)t).getRawType() ==
-                         Comparable.class) &&
+            if ((c = x.getClass()) == String.class) // bypass checks 返回该 Object运行时类。返回的 类对象是由类的代表 static synchronized方法锁定对象。
+                return c;// 如果x是个字符串对象，返回String.class     为什么如果x是个字符串就直接返回c了呢 ? 因为String  实现了 Comparable 接口，可参考如下String类的定义
+            if ((ts = c.getGenericInterfaces()) != null) {//返回表示接口，通过该对象表示的类或接口直接实现的 Types。具体参照getGenericInterfaces的注解(api)
+                for (int i = 0; i < ts.length; ++i) {//如果 c 不是字符串类，获取c直接实现的接口（如果是泛型接口则附带泛型信息）
+                    if (((t = ts[i]) instanceof ParameterizedType) && /*如果当前接口t是个泛型接口*/
+                        ((p = (ParameterizedType)t).getRawType() ==  /*如果该泛型接口t的原始类型p 是 Comparable 接口,*/
+                         Comparable.class) &&  /*如果这一个泛型参数的类型就是c，那么返回c*/
                         (as = p.getActualTypeArguments()) != null &&
                         as.length == 1 && as[0] == c) // type arg is c
                         return c;
-                }
+                }// 上面for循环的目的就是为了看看x的class是否 implements  Comparable<x的class>
             }
         }
-        return null;
+        return null;// 如果c并没有实现 Comparable<c> 那么返回空
     }
 
     /**
-     * Returns k.compareTo(x) if x matches kc (k's screened comparable
+     * Returns k.compareTo(x) if x matches kc (k's screened comparable来比较两个对象的大小
      * class), else 0.
      */
     @SuppressWarnings({"rawtypes","unchecked"}) // for cast to Comparable
-    static int compareComparables(Class<?> kc, Object k, Object x) {
-        return (x == null || x.getClass() != kc ? 0 :
+    static int compareComparables(Class<?> kc, Object k, Object x) {//如果x所属的类是kc，返回k.compareTo(x)的比较结果
+        return (x == null || x.getClass() != kc ? 0 ://如果x为空，或者其所属的类不是kc，返回0
                 ((Comparable)k).compareTo(x));
     }
 
     /**
      * Returns a power of two size for the given target capacity.
      */
-    static final int tableSizeFor(int cap) {
+    static final int tableSizeFor(int cap) {//进行减一的操作是为了防止出现二的整数幂时，没有把自身包含进范围！
         int n = cap - 1;
         n |= n >>> 1;
         n |= n >>> 2;
@@ -505,10 +505,10 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 int t = ((ft < (float)MAXIMUM_CAPACITY) ?
                          (int)ft : MAXIMUM_CAPACITY);
                 if (t > threshold)
-                    threshold = tableSizeFor(t);
+                    threshold = tableSizeFor(t);//扩容
             }
-            else if (s > threshold)
-                resize();
+            else if (s > threshold)//如果扩容后比当前的还要大，就在次判断是否扩容
+                resize();//拷贝引用。红黑树，另外处理
             for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
                 K key = e.getKey();
                 V value = e.getValue();
@@ -564,7 +564,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param key the key
      * @return the node, or null if none
      */
-    final Node<K,V> getNode(int hash, Object key) {
+    final Node<K,V> getNode(int hash, Object key) {//需要多次理解一下
         Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
         if ((tab = table) != null && (n = tab.length) > 0 &&
             (first = tab[(n - 1) & hash]) != null) {
@@ -634,7 +634,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             if (p.hash == hash &&
                 ((k = p.key) == key || (key != null && key.equals(k))))
                 e = p;
-            else if (p instanceof TreeNode)
+            else if (p instanceof TreeNode)//判断是否红黑树
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
             else {
                 for (int binCount = 0; ; ++binCount) {
@@ -704,19 +704,19 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
         table = newTab;
         if (oldTab != null) {
-            for (int j = 0; j < oldCap; ++j) {
+            for (int j = 0; j < oldCap; ++j) {//拷贝值
                 Node<K,V> e;
                 if ((e = oldTab[j]) != null) {
                     oldTab[j] = null;
                     if (e.next == null)
                         newTab[e.hash & (newCap - 1)] = e;
-                    else if (e instanceof TreeNode)
+                    else if (e instanceof TreeNode)//是否是红黑树
                         ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
                     else { // preserve order
                         Node<K,V> loHead = null, loTail = null;
                         Node<K,V> hiHead = null, hiTail = null;
                         Node<K,V> next;
-                        do {
+                        do {//拷贝的是引用
                             next = e.next;
                             if ((e.hash & oldCap) == 0) {
                                 if (loTail == null)
@@ -758,7 +758,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             resize();
         else if ((e = tab[index = (n - 1) & hash]) != null) {
             TreeNode<K,V> hd = null, tl = null;
-            do {
+            do {//浅拷贝
                 TreeNode<K,V> p = replacementTreeNode(e, null);
                 if (tl == null)
                     hd = p;
@@ -879,7 +879,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             for (int i = 0; i < tab.length; ++i) {
                 for (Node<K,V> e = tab[i]; e != null; e = e.next) {
                     if ((v = e.value) == value ||
-                        (value != null && value.equals(v)))
+                            (value != null && value.equals(v)))
                         return true;
                 }
             }
@@ -919,7 +919,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         public final boolean remove(Object key) {
             return removeNode(hash(key), key, null, false, true) != null;
         }
-        public final Spliterator<K> spliterator() {
+        public final Spliterator<K> spliterator() {//需要看看KeySpliterator的实现
             return new KeySpliterator<>(HashMap.this, 0, -1, 0, 0);
         }
         public final void forEach(Consumer<? super K> action) {
@@ -1486,9 +1486,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         final HashMap<K,V> map;
         Node<K,V> current;          // current node
         int index;                  // current index, modified on advance/split
-        int fence;                  // one past last index
-        int est;                    // size estimate
-        int expectedModCount;       // for comodification checks
+        int fence;                  // one past last index 栅栏
+        int est;                    // size estimate 估计尺寸
+        int expectedModCount;       // for comodification checks  用于modCount校验。预计Mod计数
 
         HashMapSpliterator(HashMap<K,V> m, int origin,
                            int fence, int est,
@@ -1533,7 +1533,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                                         expectedModCount);
         }
 
-        public void forEachRemaining(Consumer<? super K> action) {
+        public void forEachRemaining(Consumer<? super K> action) {//一般会用key去执行类似lamade表达式
             int i, hi, mc;
             if (action == null)
                 throw new NullPointerException();
@@ -1562,7 +1562,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
         }
 
-        public boolean tryAdvance(Consumer<? super K> action) {
+        public boolean tryAdvance(Consumer<? super K> action) {// 会遍历迭代器遍历的范围之内的元素，当找到第一个非空元素(节点)的时候就会停止遍历
             int hi;
             if (action == null)
                 throw new NullPointerException();
@@ -1574,7 +1574,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     else {
                         K k = current.key;
                         current = current.next;
-                        action.accept(k);
+                        action.accept(k);//一般会用key去执行类似lamade表达式
                         if (map.modCount != expectedModCount)
                             throw new ConcurrentModificationException();
                         return true;
@@ -1605,7 +1605,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                                           expectedModCount);
         }
 
-        public void forEachRemaining(Consumer<? super V> action) {
+        public void forEachRemaining(Consumer<? super V> action) {//一般会用value去执行类似lamade表达式
             int i, hi, mc;
             if (action == null)
                 throw new NullPointerException();
@@ -1625,7 +1625,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     if (p == null)
                         p = tab[i++];
                     else {
-                        action.accept(p.value);
+                        action.accept(p.value);//一般会用value去执行类似lamade表达式
                         p = p.next;
                     }
                 } while (p != null || i < hi);
@@ -1634,7 +1634,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
         }
 
-        public boolean tryAdvance(Consumer<? super V> action) {
+        public boolean tryAdvance(Consumer<? super V> action) {// 会遍历迭代器遍历的范围之内的元素，当找到第一个非空元素(节点)的时候就会停止遍历
             int hi;
             if (action == null)
                 throw new NullPointerException();
@@ -1646,7 +1646,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     else {
                         V v = current.value;
                         current = current.next;
-                        action.accept(v);
+                        action.accept(v);//一般会用value去执行类似lamade表达式
                         if (map.modCount != expectedModCount)
                             throw new ConcurrentModificationException();
                         return true;
@@ -1696,7 +1696,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     if (p == null)
                         p = tab[i++];
                     else {
-                        action.accept(p);
+                        action.accept(p);//一般会用元素(节点)去执行类似lamade表达式
                         p = p.next;
                     }
                 } while (p != null || i < hi);
@@ -1705,7 +1705,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
         }
 
-        public boolean tryAdvance(Consumer<? super Map.Entry<K,V>> action) {
+        public boolean tryAdvance(Consumer<? super Map.Entry<K,V>> action) {// 会遍历迭代器遍历的范围之内的元素，当找到第一个非空元素(节点)的时候就会停止遍历
             int hi;
             if (action == null)
                 throw new NullPointerException();
@@ -1717,7 +1717,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     else {
                         Node<K,V> e = current;
                         current = current.next;
-                        action.accept(e);
+                        action.accept(e);//一般会用元素(节点)去执行类似lamade表达式
                         if (map.modCount != expectedModCount)
                             throw new ConcurrentModificationException();
                         return true;

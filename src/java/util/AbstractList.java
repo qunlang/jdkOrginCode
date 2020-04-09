@@ -329,7 +329,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
 
     private class Itr implements Iterator<E> {
         /**
-         * Index of element to be returned by subsequent call to next.
+         * Index of element to be returned by subsequent call to next. 上次迭代的元素位置，每次使用完就会置为 -1
          */
         int cursor = 0;
 
@@ -352,10 +352,10 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
         }
 
         public E next() {
-            checkForComodification();
+            checkForComodification();//modCount检测是否并发操作(多线程)
             try {
                 int i = cursor;
-                E next = get(i);
+                E next = get(i);//调用 子类实现的 get() 方法获取元素
                 lastRet = i;
                 cursor = i + 1;
                 return next;
@@ -371,7 +371,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
             checkForComodification();
 
             try {
-                AbstractList.this.remove(lastRet);
+                AbstractList.this.remove(lastRet);//调用需要子类实现的 remove()方法
                 if (lastRet < cursor)
                     cursor--;
                 lastRet = -1;
@@ -396,11 +396,11 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
             return cursor != 0;
         }
 
-        public E previous() {
-            checkForComodification();
+        public E previous() {//获取前一个元素
+            checkForComodification();//modCount检测是否并发操作(多线程)
             try {
-                int i = cursor - 1;
-                E previous = get(i);
+                int i = cursor - 1;//获取游标前面一位元素
+                E previous = get(i);//调用需要子类实现的
                 lastRet = cursor = i;
                 return previous;
             } catch (IndexOutOfBoundsException e) {
@@ -423,7 +423,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
             checkForComodification();
 
             try {
-                AbstractList.this.set(lastRet, e);
+                AbstractList.this.set(lastRet, e);//调用需要子类实现的
                 expectedModCount = modCount;
             } catch (IndexOutOfBoundsException ex) {
                 throw new ConcurrentModificationException();
@@ -435,7 +435,7 @@ public abstract class AbstractList<E> extends AbstractCollection<E> implements L
 
             try {
                 int i = cursor;
-                AbstractList.this.add(i, e);
+                AbstractList.this.add(i, e);//调用需要子类实现的
                 lastRet = -1;
                 cursor = i + 1;
                 expectedModCount = modCount;

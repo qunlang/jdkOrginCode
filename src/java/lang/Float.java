@@ -452,10 +452,10 @@ public final class Float extends Number implements Comparable<Float> {
     }
 
     /**
-     * Returns {@code true} if the specified number is a
-     * Not-a-Number (NaN) value, {@code false} otherwise.
-     *
-     * @param   v   the value to be tested.
+     * Returns {@code true} if the specified number is a   1、如果 isNan 方法的参数类型是 float，就意味着以浮点型的前提(观点)来判断 (v != v)。
+     * Not-a-Number (NaN) value, {@code false} otherwise.   如果 isNan 方法的参数类型是 float，就意味着以浮点型的前提(观点)来判断 (v != v)。已经不是浮点型数值了，于是判为不等，返回 true 。
+     *  2、如果 isNan 方法的参数类型是 Float，就意味着以浮点型的包装类 Float 的对象为前提(观点)来判断 (v != v)。 此刻，v 是同一个对象的引用，(v != v)当然不成立，故返回 false 。
+     * @param   v   the value to be tested.   3、直接比较同一个对象的引用:(v != v), 结果当然是 false.
      * @return  {@code true} if the argument is NaN;
      *          {@code false} otherwise.
      */

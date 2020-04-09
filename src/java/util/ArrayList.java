@@ -767,7 +767,7 @@ public class ArrayList<E> extends AbstractList<E>
             s.writeObject(elementData[i]);
         }
 
-        if (modCount != expectedModCount) {
+        if (modCount != expectedModCount) {//modCount用于判断是否被修改过
             throw new ConcurrentModificationException();
         }
     }
@@ -933,7 +933,7 @@ public class ArrayList<E> extends AbstractList<E>
         }
 
         @SuppressWarnings("unchecked")
-        public E previous() {
+        public E previous() {//获取前一个元素
             checkForComodification();
             int i = cursor - 1;
             if (i < 0)
@@ -1015,7 +1015,7 @@ public class ArrayList<E> extends AbstractList<E>
             throw new IllegalArgumentException("fromIndex(" + fromIndex +
                                                ") > toIndex(" + toIndex + ")");
     }
-
+    //返回一个以fromIndex为起始索引（包含），以toIndex为终止索引（不包含）的子列表（List）。
     private class SubList extends AbstractList<E> implements RandomAccess {
         private final AbstractList<E> parent;
         private final int parentOffset;
@@ -1255,7 +1255,7 @@ public class ArrayList<E> extends AbstractList<E>
         final E[] elementData = (E[]) this.elementData;
         final int size = this.size;
         for (int i=0; modCount == expectedModCount && i < size; i++) {
-            action.accept(elementData[i]);
+            action.accept(elementData[i]);//执行自定义(特定，例如Lamade表达式)的方法，需要与Consumer一起使用
         }
         if (modCount != expectedModCount) {
             throw new ConcurrentModificationException();
@@ -1342,14 +1342,14 @@ public class ArrayList<E> extends AbstractList<E>
             }
             return hi;
         }
-
+//这就是为Spliterator专门设计的方法，区分与普通的Iterator，该方法会把当前元素划分一部分出去创建一个新的Spliterator作为返回，两个Spliterator变会并行执行，如果元素个数小到无法划分则返回null
         public ArrayListSpliterator<E> trySplit() {
             int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;
             return (lo >= mid) ? null : // divide range in half unless too small
                 new ArrayListSpliterator<E>(list, lo, index = mid,
                                             expectedModCount);
         }
-
+        //如果剩余的元素存在，执行特定动作的话
         public boolean tryAdvance(Consumer<? super E> action) {
             if (action == null)
                 throw new NullPointerException();
@@ -1357,14 +1357,14 @@ public class ArrayList<E> extends AbstractList<E>
             if (i < hi) {
                 index = i + 1;
                 @SuppressWarnings("unchecked") E e = (E)list.elementData[i];
-                action.accept(e);
-                if (list.modCount != expectedModCount)
+                action.accept(e);//执行自定义(特定，例如Lamade表达式)的方法，需要与Consumer一起使用
+                if (list.modCount != expectedModCount)//判断是否被多线程修改过
                     throw new ConcurrentModificationException();
                 return true;
             }
             return false;
         }
-
+        //对每个剩余元素执行给定的操作，在当前线程中顺序执行，直到所有的元素都被处理或操作抛出异常。
         public void forEachRemaining(Consumer<? super E> action) {
             int i, hi, mc; // hoist accesses and checks from loop
             ArrayList<E> lst; Object[] a;
@@ -1380,7 +1380,7 @@ public class ArrayList<E> extends AbstractList<E>
                 if ((i = index) >= 0 && (index = hi) <= a.length) {
                     for (; i < hi; ++i) {
                         @SuppressWarnings("unchecked") E e = (E) a[i];
-                        action.accept(e);
+                        action.accept(e);//执行自定义(特定，例如Lamade表达式)的方法，需要与Consumer一起使用
                     }
                     if (lst.modCount == mc)
                         return;
@@ -1388,7 +1388,7 @@ public class ArrayList<E> extends AbstractList<E>
             }
             throw new ConcurrentModificationException();
         }
-
+        //该方法用于估算还剩下多少个元素需要遍历
         public long estimateSize() {
             return (long) (getFence() - index);
         }
@@ -1399,7 +1399,7 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     @Override
-    public boolean removeIf(Predicate<? super E> filter) {
+    public boolean removeIf(Predicate<? super E> filter) {//因此可以作为赋值的目标一个lambda表达式或方法参考。
         Objects.requireNonNull(filter);
         // figure out which elements are to be removed
         // any exception thrown from the filter predicate at this stage
@@ -1422,7 +1422,7 @@ public class ArrayList<E> extends AbstractList<E>
 
         // shift surviving elements left over the spaces left by removed elements
         final boolean anyToRemove = removeCount > 0;
-        if (anyToRemove) {
+        if (anyToRemove) {//可以中间剔除
             final int newSize = size - removeCount;
             for (int i=0, j=0; (i < size) && (j < newSize); i++, j++) {
                 i = removeSet.nextClearBit(i);
