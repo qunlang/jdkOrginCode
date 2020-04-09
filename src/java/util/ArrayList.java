@@ -1317,7 +1317,7 @@ public class ArrayList<E> extends AbstractList<E>
 
         private final ArrayList<E> list;
         private int index; // current index, modified on advance/split
-        private int fence; // -1 until used; then one past last index
+        private int fence; // -1 until used; then one past last index 上一个光标
         private int expectedModCount; // initialized when fence set
 
         /** Create new spliterator covering the given  range */
@@ -1329,10 +1329,10 @@ public class ArrayList<E> extends AbstractList<E>
             this.expectedModCount = expectedModCount;
         }
 
-        private int getFence() { // initialize fence to size on first use
+        private int getFence() { // initialize fence to size on first use  上一个操作的光标，没有操作就为0
             int hi; // (a specialized variant appears in method forEach)
             ArrayList<E> lst;
-            if ((hi = fence) < 0) {
+            if ((hi = fence) < 0) {//是否为上一个光标
                 if ((lst = list) == null)
                     hi = fence = 0;
                 else {
@@ -1344,7 +1344,7 @@ public class ArrayList<E> extends AbstractList<E>
         }
 //这就是为Spliterator专门设计的方法，区分与普通的Iterator，该方法会把当前元素划分一部分出去创建一个新的Spliterator作为返回，两个Spliterator变会并行执行，如果元素个数小到无法划分则返回null
         public ArrayListSpliterator<E> trySplit() {
-            int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;
+            int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;   //getFence 上一个操作的光标，没有操作就为0
             return (lo >= mid) ? null : // divide range in half unless too small
                 new ArrayListSpliterator<E>(list, lo, index = mid,
                                             expectedModCount);
@@ -1353,7 +1353,7 @@ public class ArrayList<E> extends AbstractList<E>
         public boolean tryAdvance(Consumer<? super E> action) {
             if (action == null)
                 throw new NullPointerException();
-            int hi = getFence(), i = index;
+            int hi = getFence(), i = index;    //getFence 上一个操作的光标，没有操作就为0
             if (i < hi) {
                 index = i + 1;
                 @SuppressWarnings("unchecked") E e = (E)list.elementData[i];
@@ -1388,7 +1388,7 @@ public class ArrayList<E> extends AbstractList<E>
             }
             throw new ConcurrentModificationException();
         }
-        //该方法用于估算还剩下多少个元素需要遍历
+        //该方法用于估算还剩下多少个元素需要遍历  getFence 上一个操作的光标，没有操作就为0
         public long estimateSize() {
             return (long) (getFence() - index);
         }

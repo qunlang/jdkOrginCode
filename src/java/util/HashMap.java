@@ -393,7 +393,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * (We also tolerate length zero in some operations to allow
      * bootstrapping mechanics that are currently not needed.)
      */
-    transient Node<K,V>[] table;
+    transient Node<K,V>[] table;    //不会序列化的列表值
 
     /**
      * Holds cached entrySet(). Note that AbstractMap fields are used
@@ -424,14 +424,14 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     // Additionally, if the table array has not been allocated, this
     // field holds the initial array capacity, or zero signifying
     // DEFAULT_INITIAL_CAPACITY.)
-    int threshold;
+    int threshold;   //容量负荷系数
 
     /**
      * The load factor for the hash table.
      *
      * @serial
      */
-    final float loadFactor;
+    final float loadFactor; //哈希表的负载系数。
 
     /* ---------------- Public operations -------------- */
 
@@ -1500,7 +1500,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             this.expectedModCount = expectedModCount;
         }
 
-        final int getFence() { // initialize fence and size on first use
+        final int getFence() { // initialize fence and size on first use 上一个操作的光标，没有操作就为0
             int hi;
             if ((hi = fence) < 0) {
                 HashMap<K,V> m = map;
@@ -1513,7 +1513,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
 
         public final long estimateSize() {
-            getFence(); // force init
+            getFence(); // force init   上一个操作的光标，没有操作就为0
             return (long) est;
         }
     }
@@ -1527,7 +1527,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
 
         public KeySpliterator<K,V> trySplit() {
-            int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;
+            int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;   //getFence 上一个操作的光标，没有操作就为0
             return (lo >= mid || current != null) ? null :
                 new KeySpliterator<>(map, lo, index = mid, est >>>= 1,
                                         expectedModCount);
@@ -1567,7 +1567,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             if (action == null)
                 throw new NullPointerException();
             Node<K,V>[] tab = map.table;
-            if (tab != null && tab.length >= (hi = getFence()) && index >= 0) {
+            if (tab != null && tab.length >= (hi = getFence()) && index >= 0) {//getFence 上一个操作的光标，没有操作就为0
                 while (current != null || index < hi) {
                     if (current == null)
                         current = tab[index++];
@@ -1599,7 +1599,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
 
         public ValueSpliterator<K,V> trySplit() {
-            int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;
+            int hi = getFence(), lo = index, mid = (lo + hi) >>> 1; //getFence 上一个操作的光标，没有操作就为0
             return (lo >= mid || current != null) ? null :
                 new ValueSpliterator<>(map, lo, index = mid, est >>>= 1,
                                           expectedModCount);
@@ -1639,7 +1639,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             if (action == null)
                 throw new NullPointerException();
             Node<K,V>[] tab = map.table;
-            if (tab != null && tab.length >= (hi = getFence()) && index >= 0) {
+            if (tab != null && tab.length >= (hi = getFence()) && index >= 0) { //getFence 上一个操作的光标，没有操作就为0
                 while (current != null || index < hi) {
                     if (current == null)
                         current = tab[index++];
@@ -1670,7 +1670,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
 
         public EntrySpliterator<K,V> trySplit() {
-            int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;
+            int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;  //getFence 上一个操作的光标，没有操作就为0
             return (lo >= mid || current != null) ? null :
                 new EntrySpliterator<>(map, lo, index = mid, est >>>= 1,
                                           expectedModCount);
@@ -1710,7 +1710,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             if (action == null)
                 throw new NullPointerException();
             Node<K,V>[] tab = map.table;
-            if (tab != null && tab.length >= (hi = getFence()) && index >= 0) {
+            if (tab != null && tab.length >= (hi = getFence()) && index >= 0) {  //getFence 上一个操作的光标，没有操作就为0
                 while (current != null || index < hi) {
                     if (current == null)
                         current = tab[index++];
