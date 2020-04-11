@@ -1808,20 +1808,20 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         TreeNode<K,V> parent;  // red-black tree links  // 父节点
         TreeNode<K,V> left;   // 左子节点
         TreeNode<K,V> right;   // 右子节点
-        TreeNode<K,V> prev;    // needed to unlink next upon deletion
+        TreeNode<K,V> prev;    // needed to unlink next upon deletion //前方结点   这个前驱指针使得链表变为了双向的
         boolean red;
         TreeNode(int hash, K key, V val, Node<K,V> next) {
             super(hash, key, val, next);
         }
 
         /**
-         * Returns root of tree containing this node.
+         * Returns root of tree containing this node.返回根结点
          */
         final TreeNode<K,V> root() {
             for (TreeNode<K,V> r = this, p;;) {
                 if ((p = r.parent) == null)
                     return r;
-                r = p;
+                r = p;//不断检查parent是否为null，为null的是根结点
             }
         }
 
