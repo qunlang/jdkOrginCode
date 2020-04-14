@@ -1825,24 +1825,24 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
         }
 
-        /**
+        /**    确保给出的根结点是箱中的第一个结点也就是直接位于table上，原本的第一个结点若不是root则将root从链表中剪下放到第一个结点的前方
          * Ensures that the given root is the first node of its bin.
          */
         static <K,V> void moveRootToFront(Node<K,V>[] tab, TreeNode<K,V> root) {
             int n;
             if (root != null && tab != null && (n = tab.length) > 0) {
-                int index = (n - 1) & root.hash;
-                TreeNode<K,V> first = (TreeNode<K,V>)tab[index];
-                if (root != first) {
+                int index = (n - 1) & root.hash;  //根据root的hash值快速定位下标
+                TreeNode<K,V> first = (TreeNode<K,V>)tab[index];//取出table[index]中的第一个结点
+                if (root != first) {//root不是第一个结点，后面就是把first移动到root，整体后移一位
                     Node<K,V> rn;
-                    tab[index] = root;
-                    TreeNode<K,V> rp = root.prev;
-                    if ((rn = root.next) != null)
-                        ((TreeNode<K,V>)rn).prev = rp;
+                    tab[index] = root;//root放到table[index]位置
+                    TreeNode<K,V> rp = root.prev;//rp=root的前一个结点
+                    if ((rn = root.next) != null)//rn=root的后一个结点
+                        ((TreeNode<K,V>)rn).prev = rp;//rn的前指针指向root的前一个结点
                     if (rp != null)
-                        rp.next = rn;
+                        rp.next = rn;//rp的后指针指向root的后一个结点
                     if (first != null)
-                        first.prev = root;
+                        first.prev = root;//将原本的first放到root的后面
                     root.next = first;
                     root.prev = null;
                 }
@@ -2368,28 +2368,28 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
         }
 
-        /**
+        /**从root开始递归检查红黑树的性质，仅在检查root是否落在table上时调用
          * Recursive invariant check
          */
         static <K,V> boolean checkInvariants(TreeNode<K,V> t) {
             TreeNode<K,V> tp = t.parent, tl = t.left, tr = t.right,
                 tb = t.prev, tn = (TreeNode<K,V>)t.next;
             if (tb != null && tb.next != t)
-                return false;
+                return false;//t的前一个结点的后续应为t
             if (tn != null && tn.prev != t)
-                return false;
+                return false;//t的后一个结点的前驱应为t
             if (tp != null && t != tp.left && t != tp.right)
-                return false;
+                return false;//t因为t父亲的左儿子或右儿子
             if (tl != null && (tl.parent != t || tl.hash > t.hash))
-                return false;
+                return false;//t的左儿子的hash值应小于t，父亲应为t
             if (tr != null && (tr.parent != t || tr.hash < t.hash))
-                return false;
+                return false;//t的右儿子的hash值应大于t，父亲应为t
             if (t.red && tl != null && tl.red && tr != null && tr.red)
-                return false;
+                return false;//t和t的儿子不能同时是红色
             if (tl != null && !checkInvariants(tl))
-                return false;
+                return false;//递归检查t的左儿子
             if (tr != null && !checkInvariants(tr))
-                return false;
+                return false;//递归检查t的右儿子
             return true;
         }
     }
