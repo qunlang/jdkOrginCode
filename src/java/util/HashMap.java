@@ -339,11 +339,11 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
     }
 
-    /**
-     * Returns x's Class if it is of the form "class C implements此时就需要用到comparableClassFor方法
-     * Comparable<C>", else null.来获取该元素键的Class
+    /**  当put一个新元素时，如果该元素键的hash值小于当前节点的hash值的时候，就会作为当前节点的左节点；hash值大于当前节点hash值得时候作为当前节点的右节点
+     * Returns x's Class if it is of the form "class C implements    hash值相同的情况，Comparable进行比较一下两个对象（当前节点的键对象和新元素的键对象）
+     * Comparable<C>", else null.    能否使用Comparable就看是否实现了Comparable接口   此时就需要用到comparableClassFor方法来获取该元素键的Class
      */
-    static Class<?> comparableClassFor(Object x) {
+    static Class<?> comparableClassFor(Object x) {//再通过compareComparables方法来比较两个对象的大小
         if (x instanceof Comparable) {
             Class<?> c; Type[] ts, as; Type t; ParameterizedType p;
             if ((c = x.getClass()) == String.class) // bypass checks 返回该 Object运行时类。返回的 类对象是由类的代表 static synchronized方法锁定对象。
@@ -1870,7 +1870,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     p = pr;
                 else if (pr == null)
                     p = pl;
-                else if ((kc != null ||
+                else if ((kc != null || //在hash值相等时要用Comparable比较两个对象，前提是comparableClassFor获取class
                           (kc = comparableClassFor(k)) != null) &&
                          (dir = compareComparables(kc, k, pk)) != 0)
                     p = (dir < 0) ? pl : pr;
@@ -1890,11 +1890,11 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
 
         /**
-         * Tie-breaking utility for ordering insertions when equal
-         * hashCodes and non-comparable. We don't require a total
-         * order, just a consistent insertion rule to maintain
-         * equivalence across rebalancings. Tie-breaking further than
-         * necessary simplifies testing a bit.
+         * Tie-breaking utility for ordering insertions when equal   用这个方法来比较两个对象，返回值要么大于0，要么小于0，不会为0
+         * hashCodes and non-comparable. We don't require a total    也就是说这一步一定能确定要插入的节点要么是树的左节点，
+         * order, just a consistent insertion rule to maintain       要么是右节点，不然就无法继续满足二叉树结构了
+         * equivalence across rebalancings. Tie-breaking further than   先比较两个对象的类名，类名是字符串对象，就按字符串的比较规则
+         * necessary simplifies testing a bit.  如果两个对象是同一个类型，那么调用本地方法为两个对象生成hashCode值，再进行比较，hashCode相等的话返回-1
          */
         static int tieBreakOrder(Object a, Object b) {
             int d;
@@ -1906,8 +1906,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             return d;
         }
 
-        /**
-         * Forms tree of the nodes linked from this node.
+        /** 桶的树化,链表的树化
+         * Forms tree of the nodes linked from this node.实现该对象打头的链表转换为树结构
          */
         final void treeify(Node<K,V>[] tab) {
             TreeNode<K,V> root = null;
@@ -1951,8 +1951,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             moveRootToFront(tab, root);
         }
 
-        /**
-         * Returns a list of non-TreeNodes replacing those linked from
+        /** 红黑树链表化
+         * Returns a list of non-TreeNodes replacing those linked from  红黑树转化为链表
          * this node.
          */
         final Node<K,V> untreeify(HashMap<K,V> map) {
