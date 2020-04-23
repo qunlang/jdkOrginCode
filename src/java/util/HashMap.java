@@ -424,7 +424,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     // Additionally, if the table array has not been allocated, this
     // field holds the initial array capacity, or zero signifying
     // DEFAULT_INITIAL_CAPACITY.)
-    int threshold;   //容量负荷系数。最大承载容量threshold（capacity * loadFactor），这里的threshold不是数组的最大长度
+    int threshold;   //容量负荷系数。最大承载容量threshold（capacity * loadFactor）(容量*负荷系数)，这里的threshold不是数组的最大长度
 
     /**
      * The load factor for the hash table.
@@ -678,7 +678,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         Node<K,V>[] oldTab = table;
         int oldCap = (oldTab == null) ? 0 : oldTab.length;//原数组如果为null，则长度赋值0
         int oldThr = threshold;
-        int newCap, newThr = 0;
+        int newCap, newThr = 0; //新数组的容量newCap，新数组的扩容阀值newThr都初始化为0
         if (oldCap > 0) {//如果原数组长度大于0
             if (oldCap >= MAXIMUM_CAPACITY) {//数组大小如果已经大于等于最大值(2^30)
                 threshold = Integer.MAX_VALUE;//修改阈值为int的最大值(2^31-1)，这样以后就不会扩容了
