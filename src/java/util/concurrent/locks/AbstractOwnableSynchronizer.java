@@ -58,8 +58,8 @@ public abstract class AbstractOwnableSynchronizer
      */
     protected AbstractOwnableSynchronizer() { }
 
-    /**
-     * The current owner of exclusive mode synchronization.
+    /**   // 代表当前持有独占锁的线程，在可重入锁中可以用这个来判断当前线程是否已经拥有了锁
+     * The current owner of exclusive mode synchronization.  // if (currentThread == getExclusiveOwnerThread()) {state++}
      */
     private transient Thread exclusiveOwnerThread;
 
